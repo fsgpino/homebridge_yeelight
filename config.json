@@ -9,7 +9,10 @@
     "platforms": [
         {
             "platform" : "yeelight",
-            "name" : "yeelight"
+            "name" : "yeelight",
+            "defaultValue": {
+                "0x0000000000000000" : "My lamp",
+            }
         }
     ]
 }

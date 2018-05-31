@@ -55,17 +55,26 @@ YeePlatform.prototype = {
 
 	if (found) {
 	    this.log("cached accessory: " + newAccessory.context.did);
-	    lightbulbService = newAccessory.getService(Service.Lightbulb);
+        lightbulbService = newAccessory.getService(Service.Lightbulb);
 	} else {
 	    uuid = UUIDGen.generate(dev.did);
-            name = dev.did.name || dev.did.substring(dev.did.length-6);
+        name = dev.did.name || dev.did.substring(dev.did.length-6);
+        if(this.getnamefrconfig(dev.did)){
+            name = this.getnamefrconfig(dev.did);
+            this.log("found dev: name: " + name + "did: " + dev.did); 
+        }else{
             this.log("found dev: " + name); 
+        }
 	    newAccessory = new Accessory(name, uuid);
 	    newAccessory.context.did = dev.did;
 	    newAccessory.context.model = dev.model;
 	    lightbulbService = new Service.Lightbulb(name);	    
+        informationService = newAccessory.getService(Service.AccessoryInformation);
+        informationService
+          .setCharacteristic(Characteristic.Manufacturer, 'Yeelight')
+          .setCharacteristic(Characteristic.Model, dev.model || 'Unknown')
+          .setCharacteristic(Characteristic.SerialNumber, dev.did.substring(dev.did.length-8));
 	}
-
 	
 	dev.ctx = newAccessory;
 	
@@ -114,7 +123,7 @@ YeePlatform.prototype = {
 
     if (dev.model.search(/color.*/g) !== -1 || dev.model.search(/strip.*/g) !== -1) {
     } else {
-        if (dev.model !== 'mono' && dev.model !== 'ceiling2') {
+        if (dev.model !== 'mono' && dev.model !== 'ceiling2' && dev.model !== 'bedside') {
             lightbulbService.addOptionalCharacteristic(Characteristic.ColorTemperature);
             lightbulbService.getCharacteristic(Characteristic.ColorTemperature)
                 .on('set', function(value, callback) { that.exeCmd(dev.did, "ct", value, callback)})
@@ -237,6 +246,16 @@ YeePlatform.prototype = {
 	if (callback)
 	    callback();
     },
+
+    getnamefrconfig: function(did){
+        var defaultValueCfg = this.config['defaultValue'];
+        if(null != defaultValueCfg) {
+            if(null != defaultValueCfg[did]) {
+                return defaultValueCfg[did];
+            }
+        }
+        return false;
+    }
     
     /*
     configurationRequestHandler : function(context, request, callback) {
