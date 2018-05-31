@@ -16,6 +16,27 @@ This repository contains the Yeelight plugin for homebridge.
 ### Configuration
 1. Enable developer mode of your Yeelight bulb, Yeelight Strip or Yeelight Ceiling lamp.
 
+2. Set config
+```{
+    "bridge": {
+        "name": "YeeBridge",
+        "username": "18:00:27:40:BC:1B",
+        "port": 51825,
+        "pin": "031-45-154"
+    },
+    
+    "platforms": [
+        {
+            "platform" : "yeelight",
+            "name" : "yeelight",
+            "defaultValue": {
+                "0x0000000000000000" : "My lamp",
+            }
+        }
+    ]
+}
+```
+
 ### Run it
 1. From source code
 
